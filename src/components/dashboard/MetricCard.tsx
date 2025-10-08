@@ -40,31 +40,79 @@ export function MetricCard({
   color = 'gray',
 }: MetricCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-          <h3 className={cn('text-3xl font-bold', valueColorClasses[color])}>
+    <div style={{
+      backgroundColor: 'white',
+      borderRadius: '12px',
+      border: '1px solid #e5e7eb',
+      padding: '24px',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.boxShadow = '0 1px 3px 0 rgb(0 0 0 / 0.1)'
+    }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: '14px', fontWeight: 500, color: '#6b7280', marginBottom: '4px', margin: 0 }}>
+            {title}
+          </p>
+          <h3 style={{ 
+            fontSize: '32px', 
+            fontWeight: 700, 
+            color: valueColorClasses[color] === 'text-gray-900' ? '#111827' : 
+                   valueColorClasses[color] === 'text-green-600' ? '#059669' :
+                   valueColorClasses[color] === 'text-purple-600' ? '#9333ea' :
+                   valueColorClasses[color] === 'text-pink-600' ? '#db2777' :
+                   valueColorClasses[color] === 'text-orange-600' ? '#ea580c' : '#111827',
+            margin: 0,
+            lineHeight: 1.2
+          }}>
             {value}
           </h3>
           {subtitle && (
-            <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+            <p style={{ fontSize: '13px', color: '#9ca3af', marginTop: '4px', margin: 0 }}>
+              {subtitle}
+            </p>
           )}
         </div>
-        <div className={cn('w-12 h-12 rounded-lg flex items-center justify-center', colorClasses[color])}>
-          <Icon className="w-6 h-6" />
+        <div style={{
+          width: '48px',
+          height: '48px',
+          borderRadius: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: color === 'blue' ? '#eff6ff' :
+                          color === 'green' ? '#f0fdf4' :
+                          color === 'purple' ? '#faf5ff' :
+                          color === 'pink' ? '#fdf2f8' :
+                          color === 'orange' ? '#fff7ed' : '#f9fafb'
+        }}>
+          <Icon style={{ 
+            width: '24px', 
+            height: '24px',
+            color: color === 'blue' ? '#2563eb' :
+                   color === 'green' ? '#059669' :
+                   color === 'purple' ? '#9333ea' :
+                   color === 'pink' ? '#db2777' :
+                   color === 'orange' ? '#ea580c' : '#6b7280'
+          }} />
         </div>
       </div>
       
       {trend && (
-        <div className="flex items-center gap-1 text-sm">
-          <span className={cn(
-            'font-medium',
-            trend.isPositive ? 'text-green-600' : 'text-red-600'
-          )}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}>
+          <span style={{
+            fontWeight: 500,
+            color: trend.isPositive ? '#059669' : '#dc2626'
+          }}>
             {trend.isPositive ? '↑' : '↓'} {trend.value}
           </span>
-          <span className="text-gray-500">nos últimos 30 dias</span>
+          <span style={{ color: '#9ca3af' }}>nos últimos 30 dias</span>
         </div>
       )}
     </div>

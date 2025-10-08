@@ -68,16 +68,64 @@ export function Dashboard() {
       </div>
 
       {/* Tabs de Navegação */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex gap-8">
-            <button className="border-b-2 border-blue-600 py-4 px-1 text-sm font-medium text-blue-600">
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ borderBottom: '1px solid #e5e7eb' }}>
+          <nav style={{ marginBottom: '-1px', display: 'flex', gap: '32px' }}>
+            <button style={{
+              borderBottom: '2px solid #2563eb',
+              padding: '16px 4px',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#2563eb',
+              background: 'none',
+              border: 'none',
+              borderBottom: '2px solid #2563eb',
+              cursor: 'pointer'
+            }}>
               Membros
             </button>
-            <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+            <button style={{
+              borderBottom: '2px solid transparent',
+              padding: '16px 4px',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#6b7280',
+              background: 'none',
+              border: 'none',
+              borderBottom: '2px solid transparent',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#374151'
+              e.currentTarget.style.borderBottomColor = '#d1d5db'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#6b7280'
+              e.currentTarget.style.borderBottomColor = 'transparent'
+            }}>
               Financeiro
             </button>
-            <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+            <button style={{
+              borderBottom: '2px solid transparent',
+              padding: '16px 4px',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#6b7280',
+              background: 'none',
+              border: 'none',
+              borderBottom: '2px solid transparent',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#374151'
+              e.currentTarget.style.borderBottomColor = '#d1d5db'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#6b7280'
+              e.currentTarget.style.borderBottomColor = 'transparent'
+            }}>
               Ministérios
             </button>
           </nav>

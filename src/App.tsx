@@ -13,6 +13,8 @@ import { ForgotPassword } from './pages/auth/ForgotPassword'
 import { Dashboard } from './pages/Dashboard'
 import { Membros } from './pages/Membros'
 import { MembroForm } from './pages/MembroForm'
+import { Ministerios } from './pages/Ministerios'
+import { MinisterioForm } from './pages/MinisterioForm'
 
 function App() {
   return (
@@ -61,6 +63,33 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MembroForm />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/ministerios"
+              element={
+                <ProtectedRoute>
+                  <Ministerios />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/ministerios/novo"
+              element={
+                <ProtectedRoute>
+                  <MinisterioForm />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/ministerios/:id/editar"
+              element={
+                <ProtectedRoute>
+                  <MinisterioForm />
                 </ProtectedRoute>
               }
             />

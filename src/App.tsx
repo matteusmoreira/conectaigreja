@@ -15,6 +15,8 @@ import { Membros } from './pages/Membros'
 import { MembroForm } from './pages/MembroForm'
 import { Ministerios } from './pages/Ministerios'
 import { MinisterioForm } from './pages/MinisterioForm'
+import { Celulas } from './pages/Celulas'
+import { CelulaForm } from './pages/CelulaForm'
 
 function App() {
   return (
@@ -90,6 +92,33 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MinisterioForm />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/celulas"
+              element={
+                <ProtectedRoute>
+                  <Celulas />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/celulas/novo"
+              element={
+                <ProtectedRoute>
+                  <CelulaForm />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/celulas/editar/:id"
+              element={
+                <ProtectedRoute>
+                  <CelulaForm />
                 </ProtectedRoute>
               }
             />

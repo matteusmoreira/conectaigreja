@@ -14,7 +14,6 @@ import {
   BookOpen,
   Church,
 } from 'lucide-react'
-import { cn } from '@/utils/cn'
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -38,26 +37,63 @@ export function Sidebar() {
   const location = useLocation()
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col">
+    <aside style={{
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      height: '100vh',
+      width: '256px',
+      backgroundColor: 'white',
+      borderRight: '1px solid #e5e7eb',
+      display: 'flex',
+      flexDirection: 'column',
+      zIndex: 40
+    }}>
       {/* Logo */}
-      <div className="h-16 flex items-center gap-3 px-6 border-b border-gray-200">
-        <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-          <Church className="w-6 h-6 text-white" />
+      <div style={{
+        height: '64px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '0 24px',
+        borderBottom: '1px solid #e5e7eb'
+      }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          backgroundColor: '#111827',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Church style={{ width: '24px', height: '24px', color: 'white' }} />
         </div>
-        <div className="flex-1">
-          <h1 className="text-sm font-bold text-gray-900">Conecta Igreja</h1>
-          <p className="text-xs text-gray-500">Sistema Administrativo</p>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontSize: '14px', fontWeight: 700, color: '#111827', margin: 0 }}>
+            Conecta Igreja
+          </h1>
+          <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
+            Sistema Administrativo
+          </p>
         </div>
       </div>
 
       {/* Menu Principal */}
-      <div className="flex-1 overflow-y-auto py-6">
-        <div className="px-4 mb-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+      <div style={{ flex: 1, overflowY: 'auto', padding: '24px 0' }}>
+        <div style={{ padding: '0 16px 8px 16px' }}>
+          <p style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            color: '#9ca3af',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            margin: 0
+          }}>
             Menu Principal
           </p>
         </div>
-        <nav className="px-3 space-y-1">
+        <nav style={{ padding: '0 12px' }}>
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path
             const Icon = item.icon
@@ -66,14 +102,28 @@ export function Sidebar() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-700 hover:bg-gray-50'
-                )}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  marginBottom: '4px',
+                  backgroundColor: isActive ? '#eff6ff' : 'transparent',
+                  color: isActive ? '#2563eb' : '#374151',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = '#f9fafb'
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'
+                }}
               >
-                <Icon className="w-5 h-5" />
+                <Icon style={{ width: '20px', height: '20px' }} />
                 <span>{item.label}</span>
               </Link>
             )
@@ -81,12 +131,19 @@ export function Sidebar() {
         </nav>
 
         {/* API & Desenvolvimento */}
-        <div className="mt-8 px-4 mb-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <div style={{ padding: '32px 16px 8px 16px' }}>
+          <p style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            color: '#9ca3af',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            margin: 0
+          }}>
             API & Desenvolvimento
           </p>
         </div>
-        <nav className="px-3 space-y-1">
+        <nav style={{ padding: '0 12px' }}>
           {apiItems.map((item) => {
             const isActive = location.pathname === item.path
             const Icon = item.icon
@@ -95,14 +152,28 @@ export function Sidebar() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-700 hover:bg-gray-50'
-                )}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  marginBottom: '4px',
+                  backgroundColor: isActive ? '#eff6ff' : 'transparent',
+                  color: isActive ? '#2563eb' : '#374151',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = '#f9fafb'
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'
+                }}
               >
-                <Icon className="w-5 h-5" />
+                <Icon style={{ width: '20px', height: '20px' }} />
                 <span>{item.label}</span>
               </Link>
             )

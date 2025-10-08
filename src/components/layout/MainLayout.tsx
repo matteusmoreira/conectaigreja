@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 
@@ -10,11 +10,11 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, title, subtitle }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
       <Sidebar />
-      <div className="ml-64">
+      <div style={{ marginLeft: '256px' }}>
         <Header title={title} subtitle={subtitle} />
-        <main className="p-8">
+        <main style={{ padding: '32px' }}>
           {children}
         </main>
       </div>

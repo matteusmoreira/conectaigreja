@@ -1,6 +1,7 @@
 import { ChevronDown, LogOut, User } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useState, useRef, useEffect } from 'react'
+import type { CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface HeaderProps {
@@ -31,49 +32,126 @@ export function Header({ title, subtitle }: HeaderProps) {
   }
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+    <header style={{
+      height: '64px',
+      backgroundColor: 'white',
+      borderBottom: '1px solid #e5e7eb',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 32px'
+    }}>
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-        {subtitle && <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>}
+        <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827', margin: 0 }}>
+          {title}
+        </h1>
+        {subtitle && (
+          <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '2px', marginBottom: 0 }}>
+            {subtitle}
+          </p>
+        )}
       </div>
 
-      <div className="relative" ref={dropdownRef}>
+      <div style={{ position: 'relative' }} ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: 'transparent',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
         >
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-medium">
+          <div style={{
+            width: '32px',
+            height: '32px',
+            backgroundColor: '#2563eb',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <span style={{ color: 'white', fontSize: '14px', fontWeight: 500 }}>
               {user?.email?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>
-          <div className="text-left hidden sm:block">
-            <p className="text-sm font-medium text-gray-900">
+          <div style={{ textAlign: 'left' }}>
+            <p style={{ fontSize: '14px', fontWeight: 500, color: '#111827', margin: 0 }}>
               {user?.user_metadata?.nome_completo || 'Usuário'}
             </p>
-            <p className="text-xs text-gray-500">{user?.email}</p>
+            <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
+              {user?.email}
+            </p>
           </div>
-          <ChevronDown className="w-4 h-4 text-gray-500" />
+          <ChevronDown style={{ width: '16px', height: '16px', color: '#6b7280' }} />
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+          <div style={{
+            position: 'absolute',
+            right: 0,
+            marginTop: '8px',
+            width: '224px',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+            border: '1px solid #e5e7eb',
+            padding: '4px 0',
+            zIndex: 50
+          }}>
             <button
               onClick={() => {
                 setIsDropdownOpen(false)
                 navigate('/perfil')
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '10px 16px',
+                fontSize: '14px',
+                color: '#374151',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <User className="w-4 h-4" />
+              <User style={{ width: '16px', height: '16px' }} />
               <span>Meu Perfil</span>
             </button>
-            <div className="border-t border-gray-100 my-1" />
+            <div style={{ borderTop: '1px solid #f3f4f6', margin: '4px 0' }} />
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '10px 16px',
+                fontSize: '14px',
+                color: '#dc2626',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut style={{ width: '16px', height: '16px' }} />
               <span>Sair</span>
             </button>
           </div>

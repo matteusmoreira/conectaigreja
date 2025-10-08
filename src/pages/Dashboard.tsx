@@ -1,169 +1,226 @@
 import { MainLayout } from '@/components/layout/MainLayout'
 import { MetricCard } from '@/components/dashboard/MetricCard'
-import {
-  Users,
-  UserCheck,
-  DollarSign,
-  TrendingUp,
-  Heart,
-  Droplet,
-} from 'lucide-react'
+import { Users, UserCheck, DollarSign, Heart } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 
 export function Dashboard() {
+  const [stats, setStats] = useState({
+    totalMembros: 0,
+    membrosAtivos: 0,
+    saldoPeriodo: 0,
+    totalCelulas: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  async function loadStats() {
+    try {
+      // Buscar total de membros
+      const { count: totalMembros } = await supabase
+        .from('membros')
+        .select('*', { count: 'exact', head: true })
+        .eq('ativo', true)
+
+      // Buscar membros ativos (com data de membresia)
+      const { count: membrosAtivos } = await supabase
+        .from('membros')
+        .select('*', { count: 'exact', head: true })
+        .eq('ativo', true)
+        .not('data_membresia', 'is', null)
+
+      // Buscar total de células ativas
+      const { count: totalCelulas } = await supabase
+        .from('celulas')
+        .select('*', { count: 'exact', head: true })
+        .eq('ativo', true)
+
+      // Buscar saldo do período (últimos 30 dias)
+      const dataLimite = new Date()
+      dataLimite.setDate(dataLimite.getDate() - 30)
+
+      const { data: transacoes } = await supabase
+        .from('transacoes_financeiras')
+        .select('tipo, valor')
+        .gte('data_transacao', dataLimite.toISOString().split('T')[0])
+        .eq('status', 'confirmada')
+
+      let saldo = 0
+      transacoes?.forEach((t) => {
+        if (t.tipo === 'receita') {
+          saldo += Number(t.valor)
+        } else {
+          saldo -= Number(t.valor)
+        }
+      })
+
+      setStats({
+        totalMembros: totalMembros || 0,
+        membrosAtivos: membrosAtivos || 0,
+        saldoPeriodo: saldo,
+        totalCelulas: totalCelulas || 0,
+      })
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const percentualAtivos = stats.totalMembros > 0
+    ? Math.round((stats.membrosAtivos / stats.totalMembros) * 100)
+    : 0
+
   return (
     <MainLayout 
       title="Dashboard Executivo" 
       subtitle="Visão geral dos principais indicadores da igreja"
     >
-
       {/* Cards de Métricas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <MetricCard
           title="Total de Membros"
-          value="0"
-          subtitle="+0 nos últimos 30 dias"
+          value={loading ? '...' : stats.totalMembros}
+          subtitle="Membros cadastrados"
           icon={Users}
-          color="gray"
+          color="blue"
         />
         
         <MetricCard
           title="Membros Ativos"
-          value="0%"
-          subtitle="0 de 0 membros"
+          value={loading ? '...' : `${percentualAtivos}%`}
+          subtitle={`${stats.membrosAtivos} de ${stats.totalMembros} membros`}
           icon={UserCheck}
           color="green"
         />
         
         <MetricCard
           title="Saldo do Período"
-          value="R$ 0,00"
-          subtitle="Receitas: R$ 0,00"
+          value={loading ? '...' : `R$ ${stats.saldoPeriodo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          subtitle="Últimos 30 dias"
           icon={DollarSign}
           color="green"
         />
         
         <MetricCard
-          title="Taxa de Crescimento"
-          value="0,0%"
-          subtitle="Baseado nos últimos 30 dias"
-          icon={TrendingUp}
-          color="blue"
-        />
-        
-        <MetricCard
-          title="Ministérios Ativos"
-          value="0/0"
-          subtitle="0% engajados"
+          title="Células Ativas"
+          value={loading ? '...' : stats.totalCelulas}
+          subtitle="Grupos pequenos"
           icon={Heart}
           color="purple"
         />
-        
-        <MetricCard
-          title="Taxa de Batismo"
-          value="0%"
-          subtitle="0 membros batizados"
-          icon={Droplet}
-          color="pink"
-        />
       </div>
 
-      {/* Tabs de Navegação */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ borderBottom: '1px solid #e5e7eb' }}>
-          <nav style={{ marginBottom: '-1px', display: 'flex', gap: '32px' }}>
-            <button style={{
-              borderBottom: '2px solid #2563eb',
-              padding: '16px 4px',
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#2563eb',
-              background: 'none',
-              border: 'none',
-              borderBottom: '2px solid #2563eb',
-              cursor: 'pointer'
-            }}>
-              Membros
-            </button>
-            <button style={{
-              borderBottom: '2px solid transparent',
-              padding: '16px 4px',
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#6b7280',
-              background: 'none',
-              border: 'none',
-              borderBottom: '2px solid transparent',
+      {/* Ações Rápidas */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        border: '1px solid #e5e7eb',
+        padding: '24px',
+        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)'
+      }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#111827', marginBottom: '16px', margin: 0 }}>
+          Ações Rápidas
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+          <button
+            onClick={() => window.location.href = '/membros'}
+            style={{
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb',
+              backgroundColor: '#f9fafb',
+              textAlign: 'left',
               cursor: 'pointer',
               transition: 'all 0.2s'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#374151'
-              e.currentTarget.style.borderBottomColor = '#d1d5db'
+              e.currentTarget.style.backgroundColor = '#f3f4f6'
+              e.currentTarget.style.borderColor = '#d1d5db'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#6b7280'
-              e.currentTarget.style.borderBottomColor = 'transparent'
-            }}>
-              Financeiro
-            </button>
-            <button style={{
-              borderBottom: '2px solid transparent',
-              padding: '16px 4px',
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#6b7280',
-              background: 'none',
-              border: 'none',
-              borderBottom: '2px solid transparent',
+              e.currentTarget.style.backgroundColor = '#f9fafb'
+              e.currentTarget.style.borderColor = '#e5e7eb'
+            }}
+          >
+            <div style={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>Cadastrar Membro</div>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>Adicione um novo membro</div>
+          </button>
+          
+          <button
+            onClick={() => window.location.href = '/membros'}
+            style={{
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb',
+              backgroundColor: '#f9fafb',
+              textAlign: 'left',
               cursor: 'pointer',
               transition: 'all 0.2s'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#374151'
-              e.currentTarget.style.borderBottomColor = '#d1d5db'
+              e.currentTarget.style.backgroundColor = '#f3f4f6'
+              e.currentTarget.style.borderColor = '#d1d5db'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#6b7280'
-              e.currentTarget.style.borderBottomColor = 'transparent'
-            }}>
-              Ministérios
-            </button>
-          </nav>
-        </div>
-      </div>
-
-      {/* Seção de Gráficos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Crescimento de Membros */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Crescimento de Membros
-          </h3>
-          <p className="text-sm text-gray-500 mb-6">
-            Evolução do número de membros ao longo do tempo
-          </p>
-          <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
-            <div className="text-center">
-              <p className="text-gray-400 text-sm">Gráfico será implementado</p>
-              <p className="text-gray-400 text-xs mt-1">Aguardando dados de membros</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Distribuição por Status */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Distribuição por Status
-          </h3>
-          <p className="text-sm text-gray-500 mb-6">
-            Proporção de membros ativos, inativos e visitantes
-          </p>
-          <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
-            <div className="text-center">
-              <p className="text-gray-400 text-sm">Nenhum membro atribuído a ministérios</p>
-              <p className="text-gray-400 text-xs mt-1">Configure ministérios e atribua membros para ver a distribuição</p>
-            </div>
-          </div>
+              e.currentTarget.style.backgroundColor = '#f9fafb'
+              e.currentTarget.style.borderColor = '#e5e7eb'
+            }}
+          >
+            <div style={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>Ver Membros</div>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>Lista completa de membros</div>
+          </button>
+          
+          <button
+            onClick={() => window.location.href = '/celulas'}
+            style={{
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb',
+              backgroundColor: '#f9fafb',
+              textAlign: 'left',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f3f4f6'
+              e.currentTarget.style.borderColor = '#d1d5db'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#f9fafb'
+              e.currentTarget.style.borderColor = '#e5e7eb'
+            }}
+          >
+            <div style={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>Gerenciar Células</div>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>Células e grupos pequenos</div>
+          </button>
+          
+          <button
+            onClick={() => window.location.href = '/financas'}
+            style={{
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb',
+              backgroundColor: '#f9fafb',
+              textAlign: 'left',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f3f4f6'
+              e.currentTarget.style.borderColor = '#d1d5db'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#f9fafb'
+              e.currentTarget.style.borderColor = '#e5e7eb'
+            }}
+          >
+            <div style={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>Lançar Transação</div>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>Receitas e despesas</div>
+          </button>
         </div>
       </div>
     </MainLayout>

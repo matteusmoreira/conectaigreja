@@ -75,17 +75,21 @@ export function MembroForm() {
 
       if (error) {
         // Se não houver igreja, cria uma igreja padrão
+        const slugUnico = `igreja-${Date.now()}`
         const { data: newIgreja, error: createError } = await supabase
           .from('igrejas')
           .insert([{
             nome: 'Minha Igreja',
+            slug: slugUnico,
             cnpj: null,
             telefone: null,
             email: null,
+            site: null,
             endereco: null,
             cidade: null,
             estado: null,
             cep: null,
+            logo_url: null,
             ativo: true
           }])
           .select()
@@ -93,7 +97,7 @@ export function MembroForm() {
 
         if (createError) {
           console.error('Erro ao criar igreja padrão:', createError)
-          alert('Erro ao configurar sistema. Entre em contato com o suporte.')
+          alert(`Erro ao configurar sistema. Detalhes: ${createError.message}`)
           return
         }
 

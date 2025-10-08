@@ -114,10 +114,24 @@ export function MembroForm() {
     try {
       const dataToSave = {
         ...formData,
-        cpf: formData.cpf.replace(/\D/g, ''),
-        telefone: formData.telefone.replace(/\D/g, ''),
-        celular: formData.celular.replace(/\D/g, ''),
-        cep: formData.cep.replace(/\D/g, ''),
+        cpf: formData.cpf.replace(/\D/g, '') || null,
+        telefone: formData.telefone.replace(/\D/g, '') || null,
+        celular: formData.celular.replace(/\D/g, '') || null,
+        cep: formData.cep.replace(/\D/g, '') || null,
+        // Converter strings vazias para null (resolve erro de tipo date)
+        data_nascimento: formData.data_nascimento || null,
+        data_membresia: formData.data_membresia || null,
+        email: formData.email || null,
+        endereco: formData.endereco || null,
+        numero: formData.numero || null,
+        complemento: formData.complemento || null,
+        bairro: formData.bairro || null,
+        cidade: formData.cidade || null,
+        estado: formData.estado || null,
+        sexo: formData.sexo || null,
+        estado_civil: formData.estado_civil || null,
+        cargo: formData.cargo || null,
+        observacoes: formData.observacoes || null,
         ativo: true
       }
 

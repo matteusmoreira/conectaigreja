@@ -33,22 +33,45 @@ const apiItems = [
   { icon: BookOpen, label: 'Documentação da API', path: '/api-docs' },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const location = useLocation()
 
   return (
-    <aside style={{
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      height: '100vh',
-      width: '256px',
-      backgroundColor: 'white',
-      borderRight: '1px solid #e5e7eb',
-      display: 'flex',
-      flexDirection: 'column',
-      zIndex: 40
-    }}>
+    <>
+      {/* Overlay para mobile */}
+      {isOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 39,
+            display: window.innerWidth < 768 ? 'block' : 'none'
+          }}
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside style={{
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        height: '100vh',
+        width: '256px',
+        backgroundColor: 'white',
+        borderRight: '1px solid #e5e7eb',
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 40,
+        transform: window.innerWidth < 768 ? (isOpen ? 'translateX(0)' : 'translateX(-100%)') : 'translateX(0)',
+        transition: 'transform 0.3s ease'
+      }}>
       {/* Logo */}
       <div style={{
         height: '64px',
@@ -181,5 +204,6 @@ export function Sidebar() {
         </nav>
       </div>
     </aside>
+    </>
   )
 }

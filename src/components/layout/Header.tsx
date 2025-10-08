@@ -1,19 +1,29 @@
-import { ChevronDown, LogOut, User } from 'lucide-react'
+import { ChevronDown, LogOut, User, Menu } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useState, useRef, useEffect } from 'react'
-import type { CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface HeaderProps {
   title: string
   subtitle?: string
+  onMenuClick: () => void
 }
 
-export function Header({ title, subtitle }: HeaderProps) {
+export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
   const { user, signOut } = useAuth()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -39,17 +49,51 @@ export function Header({ title, subtitle }: HeaderProps) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 32px'
+      padding: isMobile ? '0 16px' : '0 32px',
+      gap: '12px'
     }}>
-      <div>
-        <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827', margin: 0 }}>
-          {title}
-        </h1>
-        {subtitle && (
-          <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '2px', marginBottom: 0 }}>
-            {subtitle}
-          </p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+        {/* Botão Menu Hamburguer - só aparece no mobile */}
+        {isMobile && (
+          <button
+            onClick={onMenuClick}
+            style={{
+              padding: '8px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#374151',
+              flexShrink: 0
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <Menu style={{ width: '24px', height: '24px' }} />
+          </button>
         )}
+
+        <div style={{ minWidth: 0, overflow: 'hidden' }}>
+          <h1 style={{ 
+            fontSize: isMobile ? '18px' : '24px', 
+            fontWeight: 700, 
+            color: '#111827', 
+            margin: 0,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
+            {title}
+          </h1>
+          {subtitle && !isMobile && (
+            <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '2px', marginBottom: 0 }}>
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
 
       <div style={{ position: 'relative' }} ref={dropdownRef}>

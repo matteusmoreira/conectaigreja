@@ -24,6 +24,16 @@ export function Membros() {
   const [membros, setMembros] = useState<Membro[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     loadMembros()
@@ -78,13 +88,13 @@ export function Membros() {
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '24px',
-        gap: '16px',
-        flexWrap: 'wrap'
+        alignItems: isMobile ? 'stretch' : 'center',
+        marginBottom: '20px',
+        gap: '12px',
+        flexDirection: isMobile ? 'column' : 'row'
       }}>
         {/* Campo de busca */}
-        <div style={{ flex: 1, minWidth: '300px', position: 'relative' }}>
+        <div style={{ flex: 1, minWidth: isMobile ? '100%' : '300px', position: 'relative' }}>
           <Search style={{
             position: 'absolute',
             left: '12px',

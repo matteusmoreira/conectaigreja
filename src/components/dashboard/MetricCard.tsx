@@ -1,5 +1,4 @@
 import type { LucideIcon } from 'lucide-react'
-import { cn } from '@/utils/cn'
 
 interface MetricCardProps {
   title: string
@@ -11,15 +10,6 @@ interface MetricCardProps {
     isPositive?: boolean
   }
   color?: 'blue' | 'green' | 'purple' | 'pink' | 'orange' | 'gray'
-}
-
-const colorClasses = {
-  blue: 'bg-blue-50 text-blue-600',
-  green: 'bg-green-50 text-green-600',
-  purple: 'bg-purple-50 text-purple-600',
-  pink: 'bg-pink-50 text-pink-600',
-  orange: 'bg-orange-50 text-orange-600',
-  gray: 'bg-gray-50 text-gray-600',
 }
 
 const valueColorClasses = {

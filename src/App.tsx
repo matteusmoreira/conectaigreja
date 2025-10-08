@@ -11,6 +11,7 @@ import { ForgotPassword } from './pages/auth/ForgotPassword'
 
 // App Pages
 import { Dashboard } from './pages/Dashboard'
+import { Membros } from './pages/Membros'
 
 function App() {
   return (
@@ -32,6 +33,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/membros"
+              element={
+                <ProtectedRoute>
+                  <Membros />
                 </ProtectedRoute>
               }
             />

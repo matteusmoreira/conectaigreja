@@ -54,6 +54,7 @@ export function MembroForm() {
   const [formData, setFormData] = useState<MembroFormData>(initialFormData)
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(isEditing)
+  const [loadingCep, setLoadingCep] = useState(false)
 
   useEffect(() => {
     if (isEditing) {
@@ -177,6 +178,51 @@ export function MembroForm() {
       .replace(/\D/g, '')
       .replace(/(\d{5})(\d)/, '$1-$2')
       .slice(0, 9)
+  }
+
+  async function buscarCEP(cep: string) {
+    const cepLimpo = cep.replace(/\D/g, '')
+    
+    // Só busca se tiver 8 dígitos
+    if (cepLimpo.length !== 8) return
+
+    setLoadingCep(true)
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+      const data = await response.json()
+
+      if (data.erro) {
+        alert('CEP não encontrado!')
+        return
+      }
+
+      // Preenche os campos automaticamente
+      setFormData(prev => ({
+        ...prev,
+        endereco: data.logradouro || '',
+        bairro: data.bairro || '',
+        cidade: data.localidade || '',
+        estado: data.uf || '',
+        complemento: data.complemento || ''
+      }))
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error)
+      alert('Erro ao buscar CEP. Tente novamente.')
+    } finally {
+      setLoadingCep(false)
+    }
+  }
+
+  function handleCepChange(value: string) {
+    const formatted = formatCEP(value)
+    handleChange('cep', formatted)
+    
+    // Busca automaticamente quando completar 8 dígitos
+    const cepLimpo = formatted.replace(/\D/g, '')
+    if (cepLimpo.length === 8) {
+      buscarCEP(formatted)
+    }
   }
 
   if (loadingData) {
@@ -357,13 +403,19 @@ export function MembroForm() {
               gap: '16px'
             }}>
               <div>
-                <label style={labelStyle}>CEP</label>
+                <label style={labelStyle}>
+                  CEP {loadingCep && <span style={{ color: '#2563eb', fontSize: '12px' }}>(Buscando...)</span>}
+                </label>
                 <input
                   type="text"
                   value={formData.cep}
-                  onChange={(e) => handleChange('cep', formatCEP(e.target.value))}
-                  style={inputStyle}
+                  onChange={(e) => handleCepChange(e.target.value)}
+                  style={{
+                    ...inputStyle,
+                    backgroundColor: loadingCep ? '#f9fafb' : 'white'
+                  }}
                   placeholder="00000-000"
+                  disabled={loadingCep}
                 />
               </div>
 

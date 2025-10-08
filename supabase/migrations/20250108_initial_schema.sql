@@ -6,9 +6,8 @@
 -- Descrição: Schema inicial com suporte a multitenant
 -- =====================================================
 
--- Habilitar extensões necessárias
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- Para buscas de texto
+-- Habilitar extensões necessárias (se necessário)
+-- CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- Para buscas de texto (opcional)
 
 -- =====================================================
 -- TABELA: usuarios
@@ -31,7 +30,7 @@ COMMENT ON TABLE usuarios IS 'Perfil estendido dos usuários do sistema';
 -- Representa cada organização (tenant) no sistema
 -- =====================================================
 CREATE TABLE igrejas (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     cnpj TEXT UNIQUE,
@@ -62,7 +61,7 @@ CREATE TYPE papel_igreja AS ENUM ('admin', 'pastor', 'lider', 'membro');
 CREATE TYPE status_membro AS ENUM ('ativo', 'inativo', 'visitante');
 
 CREATE TABLE membros_igreja (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     usuario_id UUID NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
     igreja_id UUID NOT NULL REFERENCES igrejas(id) ON DELETE CASCADE,
     papel papel_igreja NOT NULL DEFAULT 'membro',
@@ -89,7 +88,7 @@ CREATE TYPE estado_civil AS ENUM ('solteiro', 'casado', 'divorciado', 'viuvo');
 CREATE TYPE sexo AS ENUM ('masculino', 'feminino');
 
 CREATE TABLE membros (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     igreja_id UUID NOT NULL REFERENCES igrejas(id) ON DELETE CASCADE,
     usuario_id UUID REFERENCES usuarios(id) ON DELETE SET NULL,
     
@@ -132,7 +131,7 @@ COMMENT ON TABLE membros IS 'Cadastro completo de membros da igreja';
 -- Índices
 CREATE INDEX idx_membros_igreja ON membros(igreja_id);
 CREATE INDEX idx_membros_usuario ON membros(usuario_id);
-CREATE INDEX idx_membros_nome ON membros USING gin(nome_completo gin_trgm_ops);
+CREATE INDEX idx_membros_nome ON membros(nome_completo);
 CREATE INDEX idx_membros_ativo ON membros(ativo);
 
 -- =====================================================
@@ -142,7 +141,7 @@ CREATE INDEX idx_membros_ativo ON membros(ativo);
 CREATE TYPE dia_semana AS ENUM ('domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado');
 
 CREATE TABLE celulas (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     igreja_id UUID NOT NULL REFERENCES igrejas(id) ON DELETE CASCADE,
     lider_id UUID REFERENCES membros(id) ON DELETE SET NULL,
     
@@ -175,7 +174,7 @@ CREATE INDEX idx_celulas_ativo ON celulas(ativo);
 -- Relação entre membros e células
 -- =====================================================
 CREATE TABLE membros_celula (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     celula_id UUID NOT NULL REFERENCES celulas(id) ON DELETE CASCADE,
     membro_id UUID NOT NULL REFERENCES membros(id) ON DELETE CASCADE,
     data_entrada DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -197,7 +196,7 @@ CREATE INDEX idx_membros_celula_membro ON membros_celula(membro_id);
 CREATE TYPE tipo_categoria AS ENUM ('receita', 'despesa');
 
 CREATE TABLE categorias_financeiras (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     igreja_id UUID NOT NULL REFERENCES igrejas(id) ON DELETE CASCADE,
     nome TEXT NOT NULL,
     tipo tipo_categoria NOT NULL,
@@ -223,7 +222,7 @@ CREATE TYPE forma_pagamento AS ENUM ('dinheiro', 'pix', 'cartao_credito', 'carta
 CREATE TYPE status_transacao AS ENUM ('pendente', 'confirmada', 'cancelada');
 
 CREATE TABLE transacoes_financeiras (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     igreja_id UUID NOT NULL REFERENCES igrejas(id) ON DELETE CASCADE,
     categoria_id UUID REFERENCES categorias_financeiras(id) ON DELETE SET NULL,
     membro_id UUID REFERENCES membros(id) ON DELETE SET NULL,

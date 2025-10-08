@@ -49,8 +49,8 @@ conecta-igreja/
 
 1. Clone o repositório:
 ```bash
-git clone <url-do-repositorio>
-cd conecta-igreja
+git clone https://github.com/matteusmoreira/conectaigreja.git
+cd conectaigreja
 ```
 
 2. Instale as dependências:
@@ -124,7 +124,7 @@ Este projeto está sob a licença MIT.
 
 ## 👥 Time
 
-Desenvolvido por [Seu Nome/Equipe]
+Desenvolvido por Matteus Moreira
 
 ---
 

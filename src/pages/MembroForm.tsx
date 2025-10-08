@@ -55,12 +55,56 @@ export function MembroForm() {
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(isEditing)
   const [loadingCep, setLoadingCep] = useState(false)
+  const [igrejaId, setIgrejaId] = useState<string | null>(null)
 
   useEffect(() => {
+    loadIgrejaId()
     if (isEditing) {
       loadMembro()
     }
   }, [id])
+
+  async function loadIgrejaId() {
+    try {
+      // Busca a primeira igreja disponível (temporário - depois implementaremos multitenant)
+      const { data: igrejas, error } = await supabase
+        .from('igrejas')
+        .select('id')
+        .limit(1)
+        .single()
+
+      if (error) {
+        // Se não houver igreja, cria uma igreja padrão
+        const { data: newIgreja, error: createError } = await supabase
+          .from('igrejas')
+          .insert([{
+            nome: 'Minha Igreja',
+            cnpj: null,
+            telefone: null,
+            email: null,
+            endereco: null,
+            cidade: null,
+            estado: null,
+            cep: null,
+            ativo: true
+          }])
+          .select()
+          .single()
+
+        if (createError) {
+          console.error('Erro ao criar igreja padrão:', createError)
+          alert('Erro ao configurar sistema. Entre em contato com o suporte.')
+          return
+        }
+
+        setIgrejaId(newIgreja.id)
+      } else {
+        setIgrejaId(igrejas.id)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar igreja:', error)
+    }
+  }
 
   async function loadMembro() {
     try {
@@ -109,11 +153,17 @@ export function MembroForm() {
       return
     }
 
+    if (!igrejaId) {
+      alert('Erro ao identificar a igreja. Por favor, recarregue a página.')
+      return
+    }
+
     setLoading(true)
 
     try {
       const dataToSave = {
         ...formData,
+        igreja_id: igrejaId, // Adiciona o igreja_id obrigatório
         cpf: formData.cpf.replace(/\D/g, '') || null,
         telefone: formData.telefone.replace(/\D/g, '') || null,
         celular: formData.celular.replace(/\D/g, '') || null,

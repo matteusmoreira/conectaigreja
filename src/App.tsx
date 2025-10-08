@@ -12,6 +12,7 @@ import { ForgotPassword } from './pages/auth/ForgotPassword'
 // App Pages
 import { Dashboard } from './pages/Dashboard'
 import { Membros } from './pages/Membros'
+import { MembroForm } from './pages/MembroForm'
 
 function App() {
   return (
@@ -42,6 +43,24 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Membros />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/membros/novo"
+              element={
+                <ProtectedRoute>
+                  <MembroForm />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/membros/:id/editar"
+              element={
+                <ProtectedRoute>
+                  <MembroForm />
                 </ProtectedRoute>
               }
             />
